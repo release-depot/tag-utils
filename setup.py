@@ -37,7 +37,7 @@ and updating Koji tags""",
     tests_require=requires(prefix="test-"),
     test_suite='nose.collector',
     entry_points={
-        'console_scripts': ['tag-cleaner = tag_utils.cli.tag_cleaner:main',
-                            'tag-delta = tag_utils.cli.tag_delta:main']
+        'console_scripts': ['tag-cleaner = tag_utils.tag_cleaner:main',
+                            'tag-delta = tag_utils.tag_delta:main']
     }
 )
