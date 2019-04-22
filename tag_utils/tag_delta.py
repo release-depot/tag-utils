@@ -47,7 +47,7 @@ def main():
     upgrades = 0
     downgrades = 0
     rows, columns = os.popen('stty size', 'r').read().split()
-    fw = str(int((int(columns)-3)/3))
+    fw = str(int((int(columns) - 3) / 3))
 
     bw = KojiWrapperBase(profile='brew')
 
