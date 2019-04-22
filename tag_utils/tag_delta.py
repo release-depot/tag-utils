@@ -12,8 +12,8 @@ from toolchest.rpm.utils import labelCompare
 from koji_wrapper.tag import KojiTag
 from koji_wrapper.base import KojiWrapperBase
 
+from tag_utils.common import latest_package
 
-from tag_utils import latest_package
 
 def main():
     parser = argparse.ArgumentParser()

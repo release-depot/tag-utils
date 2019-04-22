@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-from __future__ import print_function
 
 import argparse
 import subprocess
@@ -12,12 +11,8 @@ from koji_wrapper.base import KojiWrapperBase
 from toolchest.rpm.utils import splitFilename
 from toolchest.rpm.utils import labelCompare
 
-def latest_package(koji_tag, package):
-    """Helper to wrap prior behavior from brewtag"""
-    if koji_tag.tagged_list is not None:
-        return [build['nvr'] for build in koji_tag.tagged_list if build['name'] == package][0]
+from tag_utils.common import latest_package
 
-    return None
 
 def builds_package(koji_tag, package):
     if koji_tag.tagged_list is not None and package is not None:

@@ -29,8 +29,7 @@ and updating Koji tags""",
     author_email='lon@metamorphism.com',
     url='http://github/lhh/tag_utils',
     packages=[
-        'tag_utils',
-        'tag_utils.cli'
+        'tag_utils'
     ],
     include_package_data=True,
     install_requires=requires(),
