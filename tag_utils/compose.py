@@ -4,6 +4,8 @@ import requests
 import os
 import json
 
+from toolchest.rpm.utils import componentize
+
 
 def check_compose(url):
     full_url = os.path.join(url, 'STATUS')
@@ -44,4 +46,8 @@ def compose_builds(rpm_metadata):
 def compose_as_nevr(url):
     check_compose(url)
     md = fetch_rpm_metadata(url)
-    return compose_builds(md)
+    builds = compose_builds(md)
+    ret = {}
+    for build in builds:
+        ret[componentize(build)] = build
+    return ret

@@ -22,15 +22,15 @@ def latest_package_nevr(koji_tag, package):
 
 
 def latest_tagged_as_nevr(koji_tag):
-    ret = []
-    ret_comps = []
+    # Koji reports latest tagged version of a component
+    # first, so we can short-circuit after we get the first
+    # one
+    ret = {}
     for build in koji_tag.tagged_list:
-        if build['name'] in ret_comps:
+        if build['name'] in ret:
             continue
-        ret_comps.append(build['name'])
-        ret.append(koji_build_to_nevr(build))
-
-    return (ret_comps, ret)
+        ret[build['name']] = koji_build_to_nevr(build)
+    return ret
 
 
 def latest_package(koji_tag, package):

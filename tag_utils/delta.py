@@ -1,14 +1,9 @@
 #!/usr/bin/env python
 
-import os
-
 import koji_wrapper
 from koji_wrapper.base import KojiWrapperBase
 from koji_wrapper.tag import KojiTag
 
-from toolchest.rpm.utils import splitFilename
-from toolchest.rpm.utils import labelCompare
-from toolchest.rpm.utils import componentize
 
 from tag_utils.common import latest_tagged_as_nevr
 from tag_utils.compose import compose_as_nevr
@@ -29,11 +24,12 @@ def tag_to_latest_builds(tag):
     return latest_tagged_as_nevr(koji_tag)
 
 
-# Automatically resolve input class to list of n-e:v-r
+# Automatically resolve input class to dict of:
+#   {'n': 'n-e:v-r', 'm': 'm-e:v-r'}
 # Supports:
 #    - pungi compose
 #    - koji tag
-def input_to_list(inp):
+def input_to_nevr_dict(inp):
     ret = None
 
     if isinstance(inp, str):
@@ -48,7 +44,7 @@ def input_to_list(inp):
         return ret
 
     # It might be a list of builds already
-    if isinstance(inp, list):
+    if isinstance(inp, dict):
         return inp
 
     if isinstance(inp, koji_wrapper.tag.KojiTag):
