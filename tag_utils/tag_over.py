@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
-import compose
 import copy
 import subprocess
+
+import tag_utils.compose as compose
 
 
 def chunky(stuff, length):
