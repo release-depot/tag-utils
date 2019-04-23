@@ -18,6 +18,7 @@ def builds_package(koji_tag, package):
     if koji_tag.tagged_list is not None and package is not None:
         return [build['nvr'] for build in koji_tag.tagged_list if build['name'] == package]
 
+
 def untag_it(brew_tag, builds, dry_run=False, verbose=False):
 
     print("Untagging {0} builds from {1}".format(len(builds), brew_tag))
@@ -97,10 +98,10 @@ def tag_cleaner(args):
 
     if args.debug:
         print({'tagged_only': tagged_only_components,
-              'new_builds': new_build_components,
-              'common': common,
-              'common_containers': common_containers,
-              'tagged_only_containers': tagged_only_containers})
+               'new_builds': new_build_components,
+               'common': common,
+               'common_containers': common_containers,
+               'tagged_only_containers': tagged_only_containers})
 
     builds_to_untag = []
     for c in common:
@@ -231,7 +232,7 @@ def tag_cleaner(args):
         print("Trying to clean up director-input and director-utility")
         print("Keeping {0} for Released {1}".format(keep, latest_images))
         for c in ['director-input', 'director-utility']:
-            for build in builds_package(staged_builds,c):
+            for build in builds_package(staged_builds, c):
                 if build in keep:
                     continue
 
