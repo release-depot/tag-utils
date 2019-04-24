@@ -7,8 +7,8 @@ from koji_wrapper.tag import KojiTag
 from toolchest.rpm.utils import labelCompare
 from toolchest.rpm.utils import splitFilename
 
-from tag_utils.common import latest_tagged_as_nevr
-from tag_utils.compose import compose_as_nevr
+from .common import latest_tagged_as_nevr
+from .compose import compose_as_nevr
 
 __koji_session = None
 
@@ -114,6 +114,8 @@ def delta(inp_left, inp_right):
             common[comp] = lnevr
 
     ret = {}
+    ret['old'] = left
+    ret['new'] = right
     ret['removed'] = removed
     ret['added'] = added
     ret['common'] = common

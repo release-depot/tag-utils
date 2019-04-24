@@ -6,6 +6,8 @@ import json
 
 from toolchest.rpm.utils import componentize
 
+from .common import tidy_nevra
+
 
 def check_compose(url):
     full_url = os.path.join(url, 'STATUS')
@@ -49,5 +51,5 @@ def compose_as_nevr(url):
     builds = compose_builds(md)
     ret = {}
     for build in builds:
-        ret[componentize(build)] = build
+        ret[componentize(build)] = tidy_nevra(build)
     return ret
