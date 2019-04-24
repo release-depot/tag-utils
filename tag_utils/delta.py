@@ -10,11 +10,18 @@ from toolchest.rpm.utils import splitFilename
 from tag_utils.common import latest_tagged_as_nevr
 from tag_utils.compose import compose_as_nevr
 
+__koji_session = None
+
 
 def tag_to_latest_builds(tag):
+    global __koji_session
+
     if isinstance(tag, str):
-        session = KojiWrapperBase(profile='brew')
-        koji_tag = KojiTag(tag, session=session)
+        if __koji_session is None:
+            __koji_session = KojiWrapperBase(profile='brew')
+        if __koji_session is None:
+            raise Exception('Could not connect to koji')
+        koji_tag = KojiTag(tag, session=__koji_session)
     elif isinstance(tag, koji_wrapper.tag.KojiTag):
         koji_tag = tag
     else:
