@@ -11,7 +11,7 @@ from koji_wrapper.base import KojiWrapperBase
 from toolchest.rpm.utils import splitFilename
 from toolchest.rpm.utils import labelCompare
 
-from tag_utils.common import latest_package
+from tag_utils.koji import latest_package
 
 
 def builds_package(koji_tag, package):

@@ -1,9 +1,8 @@
 Overview
 ========
 
-tag_utils is a collection of tools to assist in managing contents of
-K
-oji tags.
+tag_utils is a collection of tools to assist in comparing
+Pungi compose information and Koji tags.
 
 Setup
 =====
@@ -18,9 +17,5 @@ $ tag-delta --delta the-tag-1.1 the-tag-1.2
 Clean all non-current builds from a candidate tag:
 $ tag-cleaner fedora-29-candidate
 
-
-Hacking
-=======
-
-https://engineering.redhat.com/docs/en-US/Application_Guide/80.Developer/html/Errata_Tool/api-http-api.html
-
+Tag things builds from a compose over to a target tag
+$ tag-over http://path/to/compose/compose_id target-tag-1.2
