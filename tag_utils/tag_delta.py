@@ -6,13 +6,9 @@ import os
 import sys
 
 from toolchest import decor
-from toolchest.rpm.utils import splitFilename
-from toolchest.rpm.utils import labelCompare
 
-from koji_wrapper.tag import KojiTag
-from koji_wrapper.base import KojiWrapperBase
-
-from tag_utils.common import latest_package
+from tag_utils.common import evr_from_nevr
+from tag_utils.delta import delta
 
 
 def main():
@@ -44,112 +40,114 @@ def main():
     if args.no_inherit:
         do_inherit = False
 
-    upgrades = 0
-    downgrades = 0
     rows, columns = os.popen('stty size', 'r').read().split()
     fw = str(int((int(columns) - 3) / 3))
 
-    bw = KojiWrapperBase(profile='brew')
+    delta_info = delta(args.left_tag, args.right_tag)
 
-    ltag = KojiTag(tag=args.left_tag, session=bw)
-    rtag = KojiTag(tag=args.right_tag, session=bw)
+    lc = sorted(delta_info['old'].keys())
+    rc = sorted(delta_info['new'].keys())
+    common = sorted(delta_info['common'].keys())
 
-    ltag.builds(inherit=do_inherit, latest=True)
-    rtag.builds(inherit=do_inherit, latest=True)
+    lname = os.path.basename(args.left_tag)
+    rname = os.path.basename(args.right_tag)
 
-    lc = ltag.builds_by_attribute('name')
-    rc = rtag.builds_by_attribute('name')
-    common = sorted(list(set(lc) & set(rc)))
-    new_components = sorted(list(set(rc) - set(lc)))
-    old_components = sorted(list(set(lc) - set(rc)))
-
-    print('%d builds in %s' % (len(lc), str(ltag.tag)))
-    print('%d builds in %s' % (len(rc), str(rtag.tag)))
+    print('%d builds in %s' % (len(lc), lname))
+    print('%d builds in %s' % (len(rc), rname))
     print('Overlap: %d packages (%f %%)' % (len(common),
                                             float(len(common)) /
                                             float(len(lc)) * 100))
     if show_new:
-        print('New Packages:', len(new_components))
+        print('Added Packages:', len(delta_info['added']))
     if show_removed:
-        print('Removed Packages:', len(old_components))
+        print('Removed Packages:', len(delta_info['removed']))
 
     if sys.stdout.isatty():
         f = '%' + fw + 's %' + fw + 's %' + fw + 's'
-        print(f % ('component', str(ltag.tag), str(rtag.tag)))
-        print(f % (decor.line('component'), decor.line(str(ltag.tag)),
-                   decor.line(str(rtag.tag))))
+        print(f % ('component', lname, rname))
+        print(f % (decor.line('component'), decor.line(lname),
+                   decor.line(rname)))
     else:
         print()
-        print('component,' + str(ltag.tag) + ',' + str(rtag.tag) + ',status')
+        print('component,' + lname + ',' + rname + ',status')
 
-    for c in common:
-        lnvr = latest_package(ltag, c)
-        rnvr = latest_package(rtag, c)
-        (ln, lv, lr, le, la) = splitFilename(lnvr)
-        (rn, rv, rr, re, ra) = splitFilename(rnvr)
+    # Downgrades (normally bad)
+    for c in sorted(delta_info['downgrades'].keys()):
+        lnevr = delta_info['downgrades'][c]['old']
+        rnevr = delta_info['downgrades'][c]['new']
 
-        lvr = lv + '-' + lr
-        rvr = rv + '-' + rr
-        rebase = False
-        v = labelCompare((le, lv, lr), (re, rv, rr))
-        if v < 0 and rv != lv:
-            rebase = True
+        levr = evr_from_nevr(lnevr)
+        revr = evr_from_nevr(rnevr)
 
         if sys.stdout.isatty():
-            if v > 0:
-                f = '%' + fw + 's %s%' + fw + 's %s%' + fw + 's'
-                print(f % (c, decor.HILIGHT, lvr, decor.NORMAL, rvr))
-                downgrades = downgrades + 1
-            elif v < 0:
-                f = '%' + fw + 's %' + fw + 's %s%' + fw + 's%s'
-                print(f % (c, lvr, decor.HILIGHT, rvr, decor.NORMAL))
-                upgrades = upgrades + 1
-            elif not args.skip_same:
-                f = '%' + fw + 's %' + fw + 's %' + fw + 's'
-                print(f % (c, lvr, rvr))
+            f = '%' + fw + 's %s%' + fw + 's %s%' + fw + 's'
+            print(f % (c, decor.HILIGHT, levr, decor.NORMAL, revr))
         else:
-            if args.skip_same and v == 0:
-                continue
+            if delta_info['downgrades'][c]['rebase']:
+                print(f'{c},{levr},{revr},rebase')
+            else:
+                print(f'{c},{levr},{revr},')
 
-            status = ','
-            if rebase is True:
-                status = ',rebase'
-            print(c + ',' + lvr + ',' + rvr + status)
+    for c in sorted(delta_info['upgrades'].keys()):
+        lnevr = delta_info['upgrades'][c]['old']
+        rnevr = delta_info['upgrades'][c]['new']
+
+        levr = evr_from_nevr(lnevr)
+        revr = evr_from_nevr(rnevr)
+
+        if sys.stdout.isatty():
+            f = '%' + fw + 's %s%' + fw + 's %s%' + fw + 's'
+            print(f % (c, levr, decor.HILIGHT, revr, decor.NORMAL))
+        else:
+            if delta_info['upgrades'][c]['rebase']:
+                print(f'{c},{levr},{revr},rebase')
+            else:
+                print(f'{c},{levr},{revr},')
+
+    if not args.skip_same:
+        f = '%' + fw + 's %' + fw + 's %' + fw + 's'
+        for c in sorted(delta_info['common'].keys()):
+            nevr = delta_info['common'][c]
+            evr = evr_from_nevr(nevr)
+
+            if sys.stdout.isatty():
+                print(f % (c, evr, evr))
+            else:
+                print(f'{c},{evr},{evr},')
 
     if show_new:
         f = '%' + fw + 's %' + fw + 's %' + fw + 's'
-        for c in new_components:
-            rnvr = latest_package(rtag, c)
-            (rn, rv, rr, re, ra) = splitFilename(rnvr)
-            rvr = rv + '-' + rr
+        for c in sorted(delta_info['added'].keys()):
+            nevr = delta_info['added'][c]
+            evr = evr_from_nevr(nevr)
             if sys.stdout.isatty():
-                print(f % (c, '---', rvr))
+                print(f % (c, '---', evr))
             else:
-                print(c + ',---,' + rvr + ',new')
+                print(c + ',---,' + evr + ',new')
 
     if show_removed:
         f = '%' + fw + 's %' + fw + 's %' + fw + 's'
-        for c in old_components:
-            lnvr = latest_package(ltag, c)
-            (ln, lv, lr, le, la) = splitFilename(lnvr)
-            lvr = lv + '-' + lr
+        for c in sorted(delta_info['removed'].keys()):
+            nevr = delta_info['removed'][c]
+            evr = evr_from_nevr(nevr)
+
             if sys.stdout.isatty():
-                print(f % (c, lvr, '---'))
+                print(f % (c, evr, '---'))
             else:
-                print(c + ',' + lvr + ',---' + ',removed')
+                print(c + ',' + evr + ',---' + ',removed')
 
     print()
-    print('%d builds in %s' % (len(lc), str(ltag.tag)))
-    print('%d builds in %s' % (len(rc), str(rtag.tag)))
+    print('%d builds in %s' % (len(lc), lname))
+    print('%d builds in %s' % (len(rc), rname))
     print('Overlap: %d packages (%f %%)' % (len(common),
                                             float(len(common)) /
                                             float(len(lc)) * 100))
-    print('Downgrades:', downgrades)
-    print('Upgrades:', upgrades)
+    print('Downgrades:', len(delta_info['downgrades']))
+    print('Upgrades:', len(delta_info['upgrades']))
     if show_new:
-        print('New Packages:', len(new_components))
+        print('New Packages:', len(delta_info['added']))
     if show_removed:
-        print('Removed Packages:', len(old_components))
+        print('Removed Packages:', len(delta_info['removed']))
 
 
 if __name__ == '__main__':
