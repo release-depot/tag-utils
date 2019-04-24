@@ -3,7 +3,8 @@
 import copy
 import subprocess
 
-import tag_utils.compose as compose
+from toolchest.rpm.utils import drop_epoch
+from tag_utils.delta import delta
 
 
 def chunky(stuff, length):
@@ -15,16 +16,18 @@ def main():
     import sys
     argv = sys.argv
 
-    if len(argv) < 4:
-        print(f'usage: {argv[0]} baseurl compose_id koji_tag')
+    if len(argv) < 3:
+        print(f'usage: {argv[0]} tag_or_compose target_tag')
         return 1
 
-    rpm_meta = compose.fetch_rpm_metadata(argv[1], argv[2])
-    builds = compose.compose_builds(rpm_meta)
-    for b in builds:
-        print(b)
+    delta_info = delta(argv[1], argv[2])
 
-    tag_over = ['brew', 'tag-pkg', argv[3]]
+    # This could be done as a list generation, but it becomes less readable
+    builds = []
+    for comp in delta_info['downgrades']:
+        builds.append(drop_epoch(delta_info['downgrades'][comp]['old']))
+
+    tag_over = ['brew', 'tag-pkg', argv[2]]
     chunked_builds = chunky(builds, 10)
     for b in chunked_builds:
         cmd = copy.copy(tag_over)
