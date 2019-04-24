@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from toolchest.rpm.utils import splitFilename
+
 
 def koji_build_to_nevr(build):
     epoch_str = ''
@@ -40,3 +42,19 @@ def latest_package(koji_tag, package):
             if build['name'] == package:
                 return build['nvr']
     return None
+
+
+def tidy_nevra(nevra):
+    (n, v, r, e, a) = splitFilename(nevra)
+    if e != 0 and e != '' and e != '0':
+        v = f'{e}:{v}'
+
+    nevra = '-'.join([x for x in [n, v, r] if x != ''])
+
+    if a:
+        nevra = f'{nevra}.{a}'
+    return nevra
+
+
+def evr_from_nevr(nevr):
+    return '-'.join(nevr.rsplit('-', 2)[1:])
