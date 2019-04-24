@@ -94,11 +94,15 @@ def delta(inp_left, inp_right):
 
         (ln, lv, lr, le, la) = splitFilename(lnevr)
         (rn, rv, rr, re, ra) = splitFilename(rnevr)
+
+        rebase = False
+        if lv != rv:
+            rebase = True
         ret = labelCompare((le, lv, lr), (re, rv, rr))
         if ret > 0:
-            downgrades[comp] = [lnevr, rnevr]
+            downgrades[comp] = {'old': lnevr, 'new': rnevr, 'rebase': rebase}
         elif ret < 0:
-            upgrades[comp] = [lnevr, rnevr]
+            upgrades[comp] = {'old': lnevr, 'new': rnevr, 'rebase': rebase}
         else:
             common[comp] = lnevr
 
