@@ -29,15 +29,16 @@ and updating Koji tags""",
     author_email='lon@metamorphism.com',
     url='http://github/lhh/tag_utils',
     packages=[
-        'tag_utils'
+        'tag_utils',
+        'tag_utils/cli'
     ],
     include_package_data=True,
     install_requires=requires(),
     tests_require=requires(prefix="test-"),
     test_suite='nose.collector',
     entry_points={
-        'console_scripts': ['tag-cleaner = tag_utils.tag_cleaner:main',
-                            'tag-delta = tag_utils.tag_delta:main',
-                            'tag-over = tag_utils.tag_over:main']
+        'console_scripts': ['tag-cleaner = tag_utils.cli.tag_cleaner:main',
+                            'tag-delta = tag_utils.cli.tag_delta:main',
+                            'tag-over = tag_utils.cli.tag_over:main']
     }
 )

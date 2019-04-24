@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+#
+# TODO: use koji_wrapper to tag things
 
 import copy
 import subprocess
