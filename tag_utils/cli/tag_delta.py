@@ -18,9 +18,9 @@ def main():
                         help='show new packages in output')
     parser.add_argument('--delta', action='store_true', default=False,
                         help='show both new and removed packages in output')
-    #parser.add_argument('-N', '--no-inherit', action='store_true',
-                        #default=False,
-                        #help='Do not use inherit when checking tags')
+    parser.add_argument('-N', '--no-inherit', action='store_true',
+                        default=False,
+                        help='Do not use inherit when checking tags')
     parser.add_argument('--skip-same', action='store_true', default=False,
                         help='skip printing entries if they are the same')
 
@@ -37,13 +37,13 @@ def main():
     if args.delta:
         show_new = True
         show_removed = True
-    #if args.no_inherit:
-        #do_inherit = False
+    if args.no_inherit:
+        do_inherit = False
 
     rows, columns = os.popen('stty size', 'r').read().split()
     fw = str(int((int(columns) - 3) / 3))
 
-    delta_info = delta(args.left_tag, args.right_tag)
+    delta_info = delta(args.left_tag, args.right_tag, inherit=do_inherit)
 
     lc = sorted(delta_info['old'].keys())
     rc = sorted(delta_info['new'].keys())

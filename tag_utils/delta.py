@@ -13,8 +13,14 @@ from .compose import compose_as_nevr
 __koji_session = None
 
 
-def tag_to_latest_builds(tag):
+def tag_to_latest_builds(tag, **kwargs):
     global __koji_session
+    inherit = False
+
+    if 'session' in kwargs:
+        __koji_session = kwargs['session']
+    if 'inherit' in kwargs:
+        inherit = kwargs['inherit']
 
     if isinstance(tag, str):
         if __koji_session is None:
@@ -28,7 +34,7 @@ def tag_to_latest_builds(tag):
         raise ValueError('Expected KojiTag or str')
 
     if koji_tag.tagged_list is None:
-        koji_tag.builds()
+        koji_tag.builds(inherit=inherit)
 
     return latest_tagged_as_nevr(koji_tag)
 
@@ -38,7 +44,7 @@ def tag_to_latest_builds(tag):
 # Supports:
 #    - pungi compose
 #    - koji tag
-def input_to_nevr_dict(inp):
+def input_to_nevr_dict(inp, **kwargs):
     ret = None
 
     if isinstance(inp, str):
@@ -49,7 +55,7 @@ def input_to_nevr_dict(inp):
             ret = compose_as_nevr(inp)
         else:
             # fetch koji tag data
-            ret = tag_to_latest_builds(inp)
+            ret = tag_to_latest_builds(inp, **kwargs)
         return ret
 
     # It might be a list of builds already
@@ -57,7 +63,7 @@ def input_to_nevr_dict(inp):
         return inp
 
     if isinstance(inp, koji_wrapper.tag.KojiTag):
-        return tag_to_latest_builds(inp)
+        return tag_to_latest_builds(inp, **kwargs)
 
     raise ValueError('Unhandled type: ' + str(type(inp)))
 
@@ -73,9 +79,9 @@ def input_to_nevr_dict(inp):
 #                 from left to right
 #   - upgrades: components/builds where the n-e:v-r has increased
 #               from left to right
-def delta(inp_left, inp_right):
-    left = input_to_nevr_dict(inp_left)
-    right = input_to_nevr_dict(inp_right)
+def delta(inp_left, inp_right, **kwargs):
+    left = input_to_nevr_dict(inp_left, **kwargs)
+    right = input_to_nevr_dict(inp_right, **kwargs)
 
     lc = set(left.keys())
     rc = set(right.keys())
