@@ -1,3 +1,3 @@
 koji
-toolchest>=0.0.5
+toolchest>=0.0.6
 koji_wrapper
