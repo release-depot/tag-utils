@@ -15,5 +15,6 @@ def tidy_nevra(nevra):
     return nevra
 
 
+# Note - doesn't work with preceding epoch!
 def evr_from_nevr(nevr):
     return '-'.join(nevr.rsplit('-', 2)[1:])
