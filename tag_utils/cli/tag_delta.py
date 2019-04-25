@@ -96,7 +96,7 @@ def main():
         revr = evr_from_nevr(rnevr)
 
         if sys.stdout.isatty():
-            f = '%' + fw + 's %s%' + fw + 's %s%' + fw + 's'
+            f = '%' + fw + 's %' + fw + 's %s%' + fw + 's%s'
             print(f % (c, levr, decor.HILIGHT, revr, decor.NORMAL))
         else:
             if delta_info['upgrades'][c]['rebase']:
