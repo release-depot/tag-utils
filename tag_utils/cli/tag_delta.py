@@ -52,16 +52,6 @@ def main():
     lname = os.path.basename(args.left_tag)
     rname = os.path.basename(args.right_tag)
 
-    print('%d builds in %s' % (len(lc), lname))
-    print('%d builds in %s' % (len(rc), rname))
-    print('Overlap: %d packages (%f %%)' % (len(common),
-                                            float(len(common)) /
-                                            float(len(lc)) * 100))
-    if show_new:
-        print('Added Packages:', len(delta_info['added']))
-    if show_removed:
-        print('Removed Packages:', len(delta_info['removed']))
-
     if sys.stdout.isatty():
         f = '%' + fw + 's %' + fw + 's %' + fw + 's'
         print(f % ('component', lname, rname))
@@ -139,13 +129,14 @@ def main():
     print()
     print('%d builds in %s' % (len(lc), lname))
     print('%d builds in %s' % (len(rc), rname))
-    print('Overlap: %d packages (%f %%)' % (len(common),
-                                            float(len(common)) /
-                                            float(len(lc)) * 100))
+
+    overlap = len(common) + len(delta_info['upgrades']) + len(delta_info['downgrades'])
+    total_pkgs = len(delta_info['added']) + len(delta_info['removed']) + overlap
+    print('Overlap: %d packages (%f %%)' % (overlap, float(overlap) / float(total_pkgs) * 100))
     print('Downgrades:', len(delta_info['downgrades']))
     print('Upgrades:', len(delta_info['upgrades']))
     if show_new:
-        print('New Packages:', len(delta_info['added']))
+        print('Added Packages:', len(delta_info['added']))
     if show_removed:
         print('Removed Packages:', len(delta_info['removed']))
 
