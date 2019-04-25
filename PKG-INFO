@@ -1,0 +1,38 @@
+Metadata-Version: 1.1
+Name: tag_utils
+Version: 0.0.1
+Summary: Pungi/Koji tag utilities for Release Depot
+Author: release-depot
+Author-email: lon@metamorphism.com
+License: Copyright (c) 2017-2019 Red Hat, Inc.
+Description: Release Depot
+        -------------
+        
+        Pungi/Koji tag utilities for Release Depot projects
+        
+        Getting Started:
+        ----------------
+        To use the code:
+        
+          $ python setup.py install
+        
+        or by using pip
+        
+          $ pip install tag_utils
+        
+        Documentation:
+        --------------
+        There is not any, yet.
+        
+        
+Platform: Linux
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Natural Language :: English
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Programming Language :: Python
+Classifier: Topic :: Internet :: WWW/HTTP
+Classifier: Topic :: Software Development
+Classifier: Topic :: Software Development :: Libraries
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Utilities
