@@ -49,8 +49,8 @@ def main():
     rc = sorted(delta_info['new'].keys())
     common = sorted(delta_info['common'].keys())
 
-    lname = os.path.basename(args.left_tag)
-    rname = os.path.basename(args.right_tag)
+    lname = os.path.basename(args.left_tag.rstrip('/'))
+    rname = os.path.basename(args.right_tag.rstrip('/'))
 
     if sys.stdout.isatty():
         f = '%' + fw + 's %' + fw + 's %' + fw + 's'
