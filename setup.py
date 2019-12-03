@@ -14,7 +14,7 @@ TEST_REQUIRES = ['coverage', 'flake8', 'pytest', 'pytest-datadir', 'tox']
 
 setup(
     name='tag_utils',
-    version='0.0.3',
+    version='0.0.4',
     setup_requires=['pytest-runner'],
     install_requires=['pyyaml'],
     tests_require=TEST_REQUIRES,
