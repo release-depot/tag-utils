@@ -1,6 +1,6 @@
 Metadata-Version: 1.1
 Name: tag_utils
-Version: 0.0.3
+Version: 0.0.4
 Summary: Pungi/Koji tag utilities for Release Depot
 Author: release-depot
 Author-email: lon@metamorphism.com
