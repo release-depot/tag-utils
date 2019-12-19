@@ -1,0 +1,6 @@
+
+# added by check_manifest.py
+include *.rst
+include *.txt
+include tox.ini
+recursive-include tests *.py
