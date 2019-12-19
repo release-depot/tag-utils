@@ -2,6 +2,10 @@
 History
 =======
 
+0.0.5 (2019-12-18)
+------------------
+* Fix install requirements for PyPI
+  
 0.0.4 (2019-12-03)
 ------------------
 * Support separate destination tag
