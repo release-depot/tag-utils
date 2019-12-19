@@ -16,7 +16,7 @@ setup(
     name='tag_utils',
     version='0.0.4',
     setup_requires=['pytest-runner'],
-    install_requires=['pyyaml'],
+    install_requires=['pyyaml', 'koji', 'toolchest>=0.0.6', 'koji_wrapper'],
     tests_require=TEST_REQUIRES,
     extras_require={'test': TEST_REQUIRES},
     license='MIT',
