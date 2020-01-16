@@ -9,8 +9,23 @@ from toolchest.rpm.utils import splitFilename
 
 from .koji import latest_tagged_as_nevr
 from .compose import compose_as_nevr
+from .et import get_build_for_release
 
 __koji_session = None
+
+
+def release_set_as_nevr(release_name_or_id, koji_session, **kwargs):
+    global __koji_session
+
+    if 'session' in kwargs:
+        __koji_session = kwargs['session']
+
+    if __koji_session is None:
+        __koji_session = KojiWrapperBase(profile='brew')
+    if __koji_session is None:
+        raise Exception('Could not connect to koji')
+
+    return get_build_for_release(release_name_or_id.strip('et:'), __koji_session)
 
 
 def tag_to_latest_builds(tag, **kwargs):
@@ -53,6 +68,8 @@ def input_to_nevr_dict(inp, **kwargs):
              inp.startswith('/')):
             # fetch compose data
             ret = compose_as_nevr(inp)
+        elif inp.startswith('et:'):
+            ret = release_set_as_nevr(inp, __koji_session, **kwargs)
         else:
             # fetch koji tag data
             ret = tag_to_latest_builds(inp, **kwargs)
