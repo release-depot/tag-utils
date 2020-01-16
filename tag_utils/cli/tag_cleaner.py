@@ -51,18 +51,17 @@ def tag_cleaner(args):
 
     exclude_components = set(args.exclude.split(','))
 
-    if '-trunk-candidate' in args.brew_tag:
-        base_tag = args.brew_tag[0:-len('-trunk-candidate')]
-    elif '-candidate' in args.brew_tag:
-        base_tag = args.brew_tag[0:-len('-candidate')]
-    elif '-pending' in args.brew_tag:
-        base_tag = args.brew_tag[0:-len('-pending')]
-    elif '-override' in args.brew_tag:
-        base_tag = args.brew_tag[0:-len('-override')]
-    else:
+    base_tag = None
+    for sub_tag in ['-trunk-candidate', '-trunk-override', '-candidate',
+                    '-pending', '-override']:
+        if sub_tag in args.brew_tag:
+            base_tag = args.brew_tag[0:-len(sub_tag)]
+            break
+
+    if base_tag is None:
         raise Exception("brew tag must be either -candidate, -trunk-candidate,"
-                        " -pending, or -override otherwise I don't "
-                        "know what to do")
+                        " -trunk-override, -pending, or -override otherwise "
+                        "I don't know what to do")
 
     candidate_tag = args.brew_tag
     container_tag = base_tag + '-container-released'
