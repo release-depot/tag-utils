@@ -14,7 +14,7 @@ TEST_REQUIRES = ['coverage', 'flake8', 'pytest', 'pytest-datadir', 'tox']
 
 setup(
     name='tag_utils',
-    version='0.0.5',
+    version='0.0.6',
     setup_requires=['pytest-runner'],
     install_requires=['pyyaml', 'koji', 'toolchest>=0.0.6', 'koji_wrapper'],
     tests_require=TEST_REQUIRES,
