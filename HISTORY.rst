@@ -1,6 +1,10 @@
 =======
 History
 =======
+0.0.7 (2020-03-19)
+------------------
+* Optimize to avoid double-tagging in tag-over
+
 0.0.6 (2020-01-22)
 ------------------
 * Add Errata support
