@@ -7,6 +7,8 @@ import subprocess
 
 from toolchest.rpm.utils import drop_epoch
 from tag_utils.delta import delta
+from koji_wrapper.tag import KojiTag
+from koji_wrapper.base import KojiWrapperBase
 
 
 def chunky(stuff, length):
@@ -51,6 +53,15 @@ def main():
     if missing:
         for comp in delta_info['removed']:
             builds.append(drop_epoch(delta_info['removed'][comp]))
+
+    # if we're tagging somewhere else, avoid dup tagging
+    # Search all builds, not just latest
+    if dest_tag != argv[2]:
+        brew = KojiWrapperBase(profile='brew')
+        t = KojiTag(session=brew, tag=dest_tag)
+        nvrs = [b['nvr'] for b in t.builds()]
+        b = set(builds) & set(nvrs)
+        builds = list(set(builds) - b)
 
     # Simply print what we'd tag
     if display:
