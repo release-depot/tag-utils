@@ -14,7 +14,7 @@ TEST_REQUIRES = ['coverage', 'flake8', 'pytest', 'pytest-datadir', 'tox']
 
 setup(
     name='tag_utils',
-    version='0.0.7',
+    version='0.0.8',
     setup_requires=['pytest-runner'],
     install_requires=['pyyaml', 'koji', 'toolchest>=0.0.6', 'koji_wrapper'],
     tests_require=TEST_REQUIRES,
@@ -35,7 +35,8 @@ setup(
     entry_points={
         'console_scripts': ['tag-cleaner = tag_utils.cli.tag_cleaner:main',
                             'tag-delta = tag_utils.cli.tag_delta:main',
-                            'tag-over = tag_utils.cli.tag_over:main']
+                            'tag-over = tag_utils.cli.tag_over:main',
+                            'trunk-update = tag_utils.cli.tag_over:trunk_update']
     },
     classifiers=['Development Status :: 4 - Beta',
                  'Intended Audience :: Developers',
