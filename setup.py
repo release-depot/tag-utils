@@ -35,7 +35,8 @@ setup(
     entry_points={
         'console_scripts': ['tag-cleaner = tag_utils.cli.tag_cleaner:main',
                             'tag-delta = tag_utils.cli.tag_delta:main',
-                            'tag-over = tag_utils.cli.tag_over:main']
+                            'tag-over = tag_utils.cli.tag_over:main',
+                            'trunk-update = tag_utils.cli.tag_over:trunk_update']
     },
     classifiers=['Development Status :: 4 - Beta',
                  'Intended Audience :: Developers',
