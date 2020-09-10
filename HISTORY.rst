@@ -1,6 +1,11 @@
 =======
 History
 =======
+0.0.8 (2020-09-10)
+------------------
+* Use argparse for tag-over
+* Add trunk-update wrapper for tag-over
+
 0.0.7 (2020-03-19)
 ------------------
 * Optimize to avoid double-tagging in tag-over
