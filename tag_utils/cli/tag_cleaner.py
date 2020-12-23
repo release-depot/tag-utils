@@ -201,26 +201,47 @@ def tag_cleaner(args):
     # NOTE: jschlueter 2016-12-16
     # for RH-OSP we have several image builds that use
     # brew image-build-indirection to generate the released images
-    # rhosp-director-images ==> director-utility,director-input
-    #   director-utility and -input are used to generate overcloud-full
+    # rhosp-director-images ==> director-utility,director-input,minimal-input
+    #   director-utility and *-input are used to generate overcloud-full
     #   and ironic-python-agent images.  Those images are then embedded
     #   in rhos-director-images.
-    # This means we never release director-utility/-input images and they
-    # need to be cleaned out of the -candidate tag but we would like to keep
-    # last released one around plus any newer than last released
+    # This means we never release these auxiliary images and they
+    # need to be cleaned out of the -candidate tag but we would like to leave
+    # tagged in -candidate any auxiliary images equal or newer to the last
+    # released overcloud-full package.
     #
-    # add logic to handle director-input/-utility
+    # Beginning with OSP 16.1, the multiarch name is included in the
+    # image build name, e.g. overcloud-full-(x86_64|ppc64le) corresponds
+    # respectively to director-input-(x86_64|ppc64le),
+    # director-utility-(x86_64|ppc64le), minimal-input-(x86_64|ppc64le)
+    #
+    # add logic to handle auxiliary image builds
     # we want to keep corresponding -input and -utility images
     # matching build is:
-    # overcloud-full-<VR>
-    #    == director-input-<VR>
-    #    == director-utility-<VR>
+    # overcloud-full-(ARCH-)<VR>
+    #    == director-input-(ARCH-)<VR>
+    #    == director-utility-(ARCH-)<VR>
+    #    == minimal-input-(ARCH-)<VR> (16.1+ only)
     latest_images = None
+
+    # By default use the pre-16.1 naming convention
+    oc_build_name = 'overcloud-full'
+    aux_build_names = ['director-input',
+                       'director-utility']
+
+    # If the multiarch overcloud-full-x86_64 build is present, use
+    # multiarch-named builds
+    if ('overcloud-full-x86_64' in lc):
+        oc_build_name = 'overcloud-full-x86_64'
+        aux_build_names = ['director-input-x86_64', 'director-input-ppc64le',
+                           'director-utility-x86_64', 'director-utility-ppc64le',
+                           'minimal-input-x86_64', 'minimal-input-ppc64le']
+
     if (
-            (('director-input' in rc) or ('director-utility' in rc)) and
-            ('overcloud-full' in lc)
+        [a for a in aux_build_names if a in rc] and
+        oc_build_name in lc
     ):
-        latest_images = latest_package(released_builds, 'overcloud-full')
+        latest_images = latest_package(released_builds, oc_build_name)
         if args.debug:
             if latest_images is not None:
                 print('Attempting director-input/utility image cleanup')
@@ -228,12 +249,12 @@ def tag_cleaner(args):
                 print('Skipping director-input/utility no overcloud-full found')
 
     if latest_images is not None:
-        VR = latest_images[len('overcloud-full'):]
-        keep = ['director-input' + VR, 'director-utility' + VR]
+        VR = latest_images[len(oc_build_name):]
+        keep = [abn + VR for abn in aux_build_names]
 
         print("Trying to clean up director-input and director-utility")
         print("Keeping {0} for Released {1}".format(keep, latest_images))
-        for c in ['director-input', 'director-utility']:
+        for c in aux_build_names:
             for build in builds_package(staged_builds, c):
                 if build in keep:
                     continue
