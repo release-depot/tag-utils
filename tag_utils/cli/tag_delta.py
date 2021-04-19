@@ -3,6 +3,7 @@ from __future__ import print_function
 
 import argparse
 import os
+import shutil
 import sys
 
 from toolchest import decor
@@ -40,7 +41,7 @@ def main():
     if args.no_inherit:
         do_inherit = False
 
-    rows, columns = os.popen('stty size', 'r').read().split()
+    columns, rows = shutil.get_terminal_size()
     fw = str(int((int(columns) - 3) / 3))
 
     delta_info = delta(args.left_tag, args.right_tag, inherit=do_inherit)

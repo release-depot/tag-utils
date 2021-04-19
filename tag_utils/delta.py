@@ -7,9 +7,10 @@ from koji_wrapper.tag import KojiTag
 from toolchest.rpm.utils import labelCompare
 from toolchest.rpm.utils import splitFilename
 
-from .koji import latest_tagged_as_nevr
+from .basic import file_as_nevr
 from .compose import compose_as_nevr
 from .et import get_build_for_release
+from .koji import latest_tagged_as_nevr
 
 __koji_session = None
 
@@ -70,6 +71,13 @@ def input_to_nevr_dict(inp, **kwargs):
             ret = compose_as_nevr(inp)
         elif inp.startswith('et:'):
             ret = release_set_as_nevr(inp, __koji_session, **kwargs)
+        elif inp.startswith('file:'):
+            # file
+            fn = inp.split(':')[1]
+            return file_as_nevr(fn)
+        elif inp == '-':
+            # stdin
+            return file_as_nevr(inp)
         else:
             # fetch koji tag data
             ret = tag_to_latest_builds(inp, **kwargs)
