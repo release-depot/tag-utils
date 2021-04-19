@@ -2,14 +2,16 @@
 #
 # TODO: use koji_wrapper to tag things
 
+import argparse
 import copy
 import subprocess
-import argparse
+
+from koji_wrapper.base import KojiWrapperBase
+from koji_wrapper.tag import KojiTag
+
+from tag_utils.delta import delta
 
 from toolchest.rpm.utils import drop_epoch
-from tag_utils.delta import delta
-from koji_wrapper.tag import KojiTag
-from koji_wrapper.base import KojiWrapperBase
 
 
 def get_args():

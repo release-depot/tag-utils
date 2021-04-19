@@ -7,10 +7,10 @@ from koji_wrapper.tag import KojiTag
 from toolchest.rpm.utils import labelCompare
 from toolchest.rpm.utils import splitFilename
 
-from .koji import latest_tagged_as_nevr
-from .compose import compose_as_nevr
 from .basic import file_as_nevr
+from .compose import compose_as_nevr
 from .et import get_build_for_release
+from .koji import latest_tagged_as_nevr
 
 __koji_session = None
 

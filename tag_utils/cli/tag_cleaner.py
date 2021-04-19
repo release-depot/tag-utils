@@ -5,13 +5,13 @@ import subprocess
 
 import koji
 
-from koji_wrapper.tag import KojiTag
 from koji_wrapper.base import KojiWrapperBase
-
-from toolchest.rpm.utils import splitFilename
-from toolchest.rpm.utils import labelCompare
+from koji_wrapper.tag import KojiTag
 
 from tag_utils.koji import latest_package
+
+from toolchest.rpm.utils import labelCompare
+from toolchest.rpm.utils import splitFilename
 
 
 def builds_package(koji_tag, package):
