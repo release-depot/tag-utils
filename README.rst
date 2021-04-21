@@ -2,6 +2,13 @@
 tag-utils
 =========
 
+.. image:: https://github.com/release-depot/tag-utils/actions/workflows/test.yml/badge.svg
+        :target: https://github.com/release-depot/tag-utils/actions/workflows/test.yml
+
+.. image:: https://img.shields.io/pypi/v/tag-utils.svg
+        :target: https://pypi.python.org/pypi/tag-utils
+
+
 tag-utils is a collection of Pungi/Koji tag utilities for release-depot.
 
 Prerequisites

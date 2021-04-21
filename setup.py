@@ -15,10 +15,12 @@ TEST_REQUIRES = ['coverage', 'flake8', 'pytest', 'pytest-datadir', 'tox']
 setup(
     name='tag_utils',
     version='0.0.8',
-    setup_requires=['pytest-runner'],
     install_requires=['pyyaml', 'koji', 'toolchest>=0.0.6', 'koji_wrapper'],
     tests_require=TEST_REQUIRES,
-    extras_require={'test': TEST_REQUIRES},
+    extras_require={'test': TEST_REQUIRES,
+                    'docs': ['sphinx',
+                             'sphinx-autobuild',
+                             'sphinx-rtd-theme']},
     license='MIT',
     description=("tag_utils is a collection of Pungi compose "
                  "and Koji tag functions for release-depot."),
