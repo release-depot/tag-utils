@@ -1,0 +1,10 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[dev-packages]
+tag-utils= {path = ".",extras = ["docs","test"]}
+
+[packages]
+tag-utils = {path = ".",editable = true}
