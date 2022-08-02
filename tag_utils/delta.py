@@ -87,7 +87,7 @@ def input_to_nevr_dict(inp, **kwargs):
     if isinstance(inp, str):
         if ( inp.startswith('http://') or   # NOQA
              inp.startswith('https://') or  # NOQA
-             inp.startswith('/')):
+             inp.startswith('file://')):
             ret = _url_as_nevr(inp)
         elif inp.startswith('et:'):
             ret = release_set_as_nevr(inp, __koji_session, **kwargs)

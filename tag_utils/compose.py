@@ -19,6 +19,20 @@ def check_compose(url, verify=True):
     raise ValueError('Failed to check compose; HTTP code ' + str(ret.status_code))
 
 
+def fetch_or_read(url):
+    if url.startswith('file://'):
+        filename = url[7:]
+        fp = open(filename, 'r')
+        ret = fp.read()
+        fp.close()
+        return ret
+    else:
+        ret = requests.get(url)
+        if ret.status_code == 200:
+            return ret.text
+        raise ValueError('Failed to check compose; HTTP code ' + str(ret.status_code))
+
+
 def fetch_rpm_metadata(url, verify=True):
     check_compose(url)
     full_url = os.path.join(url, 'compose/metadata/rpms.json')
