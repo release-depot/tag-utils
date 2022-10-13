@@ -9,9 +9,9 @@ from toolchest.rpm.utils import componentize
 from .common import tidy_nevra
 
 
-def check_compose(url):
+def check_compose(url, verify=True):
     full_url = os.path.join(url, 'STATUS')
-    ret = requests.get(full_url)
+    ret = requests.get(full_url, verify=verify)
     if ret.status_code == 200:
         if ret.text.startswith('FINISHED'):
             return True
@@ -19,10 +19,10 @@ def check_compose(url):
     raise ValueError('Failed to check compose; HTTP code ' + str(ret.status_code))
 
 
-def fetch_rpm_metadata(url):
+def fetch_rpm_metadata(url, verify=True):
     check_compose(url)
     full_url = os.path.join(url, 'compose/metadata/rpms.json')
-    ret = requests.get(full_url)
+    ret = requests.get(full_url, verify=verify)
     if ret.status_code == 200:
         return json.loads(ret.text)
 
