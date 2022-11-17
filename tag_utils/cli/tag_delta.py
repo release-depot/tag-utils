@@ -13,7 +13,13 @@ from tag_utils.delta import delta
 
 
 def main():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        description='compare list of builds from koji or other sources',
+        epilog='left and right tags can be in the form of '
+               '<koji_tag> | file:<filename> '
+               '|  http[s]://<url to compose> '
+               '| et:<release name or id>  (Errata Tool Release name or id) '
+               '| -   (use stdin as list of nvr to compare against)')
 
     parser.add_argument('--new', action='store_true', default=False,
                         help='show new packages in output')
