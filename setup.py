@@ -10,7 +10,7 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 
-TEST_REQUIRES = ['coverage', 'flake8', 'pytest', 'pytest-datadir', 'tox']
+TEST_REQUIRES = ['pytest-cov', 'flake8', 'pytest', 'pytest-datadir', 'tox']
 
 setup(
     name='tag_utils',
