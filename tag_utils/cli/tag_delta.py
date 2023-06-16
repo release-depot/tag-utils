@@ -30,6 +30,10 @@ def main():
                         help='Do not use inherit when checking tags')
     parser.add_argument('--skip-same', action='store_true', default=False,
                         help='skip printing entries if they are the same')
+    parser.add_argument('--skip-downgrades', action='store_true', default=False,
+                        help='skip printing entries if they are downgrades (left > right)')
+    parser.add_argument('--skip-upgrades', action='store_true', default=False,
+                        help='skip printing entries if they are upgrades (right > left)')
 
     parser.add_argument('left_tag', help='left brew tag for comparison')
     parser.add_argument('right_tag', help='right brew tag for comparison')
@@ -37,6 +41,9 @@ def main():
 
     show_new = False
     show_removed = False
+    show_same = True
+    show_upgrades = True
+    show_downgrades = True
     do_inherit = True
 
     if args.new:
@@ -46,6 +53,12 @@ def main():
         show_removed = True
     if args.no_inherit:
         do_inherit = False
+    if args.skip_same:
+        show_same = False
+    if args.skip_downgrades:
+        show_downgrades = False
+    if args.skip_upgrades:
+        show_upgrades = False
 
     columns, rows = shutil.get_terminal_size()
     fw = str(int((int(columns) - 3) / 3))
@@ -69,39 +82,41 @@ def main():
         print('component,' + lname + ',' + rname + ',status')
 
     # Downgrades (normally bad)
-    for c in sorted(delta_info['downgrades'].keys()):
-        lnevr = delta_info['downgrades'][c]['old']
-        rnevr = delta_info['downgrades'][c]['new']
+    if show_downgrades:
+        for c in sorted(delta_info['downgrades'].keys()):
+            lnevr = delta_info['downgrades'][c]['old']
+            rnevr = delta_info['downgrades'][c]['new']
 
-        levr = evr_from_nevr(lnevr)
-        revr = evr_from_nevr(rnevr)
+            levr = evr_from_nevr(lnevr)
+            revr = evr_from_nevr(rnevr)
 
-        if sys.stdout.isatty():
-            f = '%' + fw + 's %s%' + fw + 's %s%' + fw + 's'
-            print(f % (c, decor.HILIGHT, levr, decor.NORMAL, revr))
-        else:
-            if delta_info['downgrades'][c]['rebase']:
-                print(f'{c},{levr},{revr},rebase')
+            if sys.stdout.isatty():
+                f = '%' + fw + 's %s%' + fw + 's %s%' + fw + 's'
+                print(f % (c, decor.HILIGHT, levr, decor.NORMAL, revr))
             else:
-                print(f'{c},{levr},{revr},')
+                if delta_info['downgrades'][c]['rebase']:
+                    print(f'{c},{levr},{revr},rebase')
+                else:
+                    print(f'{c},{levr},{revr},')
 
-    for c in sorted(delta_info['upgrades'].keys()):
-        lnevr = delta_info['upgrades'][c]['old']
-        rnevr = delta_info['upgrades'][c]['new']
+    if show_upgrades:
+        for c in sorted(delta_info['upgrades'].keys()):
+            lnevr = delta_info['upgrades'][c]['old']
+            rnevr = delta_info['upgrades'][c]['new']
 
-        levr = evr_from_nevr(lnevr)
-        revr = evr_from_nevr(rnevr)
+            levr = evr_from_nevr(lnevr)
+            revr = evr_from_nevr(rnevr)
 
-        if sys.stdout.isatty():
-            f = '%' + fw + 's %' + fw + 's %s%' + fw + 's%s'
-            print(f % (c, levr, decor.HILIGHT, revr, decor.NORMAL))
-        else:
-            if delta_info['upgrades'][c]['rebase']:
-                print(f'{c},{levr},{revr},rebase')
+            if sys.stdout.isatty():
+                f = '%' + fw + 's %' + fw + 's %s%' + fw + 's%s'
+                print(f % (c, levr, decor.HILIGHT, revr, decor.NORMAL))
             else:
-                print(f'{c},{levr},{revr},')
+                if delta_info['upgrades'][c]['rebase']:
+                    print(f'{c},{levr},{revr},rebase')
+                else:
+                    print(f'{c},{levr},{revr},')
 
-    if not args.skip_same:
+    if show_same:
         f = '%' + fw + 's %' + fw + 's %' + fw + 's'
         for c in sorted(delta_info['common'].keys()):
             nevr = delta_info['common'][c]
