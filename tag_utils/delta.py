@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from urllib.parse import urlparse
+
 import koji_wrapper
 from koji_wrapper.base import KojiWrapperBase
 from koji_wrapper.tag import KojiTag
@@ -9,7 +11,8 @@ from toolchest.rpm.utils import splitFilename
 
 from .basic import file_as_nevr
 from .compose import compose_as_nevr
-from .et import get_build_for_release
+from .dlrn import json_api_as_nevr
+from .et import get_build_for_release, get_build_for_advisory
 from .koji import latest_tagged_as_nevr
 
 __koji_session = None
@@ -27,6 +30,20 @@ def release_set_as_nevr(release_name_or_id, koji_session, **kwargs):
         raise Exception('Could not connect to koji')
 
     return get_build_for_release(release_name_or_id.strip('et:'), __koji_session)
+
+
+def erratum_set_as_nevr(errata_id, koji_session, **kwargs):
+    global __koji_session
+
+    if 'session' in kwargs:
+        __koji_session = kwargs['session']
+
+    if __koji_session is None:
+        __koji_session = KojiWrapperBase(profile='brew')
+    if __koji_session is None:
+        raise Exception('Could not connect to koji')
+
+    return get_build_for_advisory(errata_id.strip('et::'), __koji_session)
 
 
 def tag_to_latest_builds(tag, **kwargs):
@@ -55,20 +72,39 @@ def tag_to_latest_builds(tag, **kwargs):
     return latest_tagged_as_nevr(koji_tag)
 
 
+def _url_as_nevr(inp):
+    parsed_url = urlparse(inp)
+
+    if not parsed_url.path:
+        raise ValueError('Invalid URL: ' + inp)
+
+    if parsed_url.path.startswith('/dlrn/versions/'):
+        # drln API (JSON) - preferred
+        ret = json_api_as_nevr(inp)
+    else:
+        # fetch compose data
+        ret = compose_as_nevr(inp)
+    return ret
+
+
 # Automatically resolve input class to dict of:
 #   {'n': 'n-e:v-r', 'm': 'm-e:v-r'}
 # Supports:
 #    - pungi compose
 #    - koji tag
+#    - flat file (list of NVRs
+#    - errata tool build lists
+#    - JSON-parsed DLRN results
 def input_to_nevr_dict(inp, **kwargs):
     ret = None
 
     if isinstance(inp, str):
         if ( inp.startswith('http://') or   # NOQA
              inp.startswith('https://') or  # NOQA
-             inp.startswith('/')):
-            # fetch compose data
-            ret = compose_as_nevr(inp)
+             inp.startswith('file://')):
+            ret = _url_as_nevr(inp)
+        elif inp.startswith('et::'):
+            ret = erratum_set_as_nevr(inp, __koji_session, **kwargs)
         elif inp.startswith('et:'):
             ret = release_set_as_nevr(inp, __koji_session, **kwargs)
         elif inp.startswith('file:'):

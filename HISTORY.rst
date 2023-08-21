@@ -1,6 +1,15 @@
 =======
 History
 =======
+0.0.9 (2023-08-21)
+------------------
+* Support DLRN results, local composes
+* Allow et:: to look at one specific advisory instead of a release
+* Allow skipping downgrades or upgrades
+* Improve help output
+* Allow specifying verify parameter to requests
+* Allow multi-arch non-RPM builds when cleaning tags
+
 0.0.8 (2020-09-10)
 ------------------
 * Use argparse for tag-over

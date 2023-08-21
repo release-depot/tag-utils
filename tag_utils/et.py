@@ -33,18 +33,7 @@ def get_advisory_list(errata_tool_release, debug=False):
     return [Erratum(errata_id=advisory_id) for advisory_id in advisory_ids]
 
 
-def get_build_for_release(release_name_or_id, koji_session, debug=False):
-    if debug:
-        print('got in "{0}"'.format(release_name_or_id))
-    try:
-        rel = errata_tool.release.Release(id=int(release_name_or_id))
-        advisories = [i for i in rel.advisories() if i["status"] not in ('SHIPPED_LIVE', 'DROP_NO_SHIP')]
-        advisory_list = [Erratum(errata_id=i['id']) for i in advisories]
-        if debug:
-            print("Got list of advisories:", advisories)
-    except ValueError:
-        advisory_list = get_advisory_list(release_name_or_id, debug=debug)
-
+def _get_builds_for_advisory_list(advisory_list, koji_session, debug=False):
     all_builds = set()
     for advisory in advisory_list:
         if debug:
@@ -61,3 +50,25 @@ def get_build_for_release(release_name_or_id, koji_session, debug=False):
         return_data[build_data['name']] = koji_build_to_nevr(build_data)
 
     return return_data
+
+
+def get_build_for_release(release_name_or_id, koji_session, debug=False):
+    if debug:
+        print('got in "{0}"'.format(release_name_or_id))
+    try:
+        rel = errata_tool.release.Release(id=int(release_name_or_id))
+        advisories = [i for i in rel.advisories() if i["status"] not in ('SHIPPED_LIVE', 'DROP_NO_SHIP')]
+        advisory_list = [Erratum(errata_id=i['id']) for i in advisories]
+        if debug:
+            print("Got list of advisories:", advisories)
+    except ValueError:
+        advisory_list = get_advisory_list(release_name_or_id, debug=debug)
+
+    return _get_builds_for_advisory_list(advisory_list, koji_session, debug=debug)
+
+
+def get_build_for_advisory(advisory_id, koji_session, debug=False):
+    if debug:
+        print('got advisory "{0}"'.format(advisory_id))
+    erratum = Erratum(errata_id=advisory_id)
+    return _get_builds_for_advisory_list([erratum], koji_session, debug=debug)

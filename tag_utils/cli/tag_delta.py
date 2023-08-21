@@ -19,6 +19,7 @@ def main():
                '<koji_tag> | file:<filename> '
                '|  http[s]://<url to compose> '
                '| et:<release name or id>  (Errata Tool Release name or id) '
+               '| et::<id>                 (Single Errata Tool advisory id) '
                '| -   (use stdin as list of nvr to compare against)')
 
     parser.add_argument('--new', action='store_true', default=False,
